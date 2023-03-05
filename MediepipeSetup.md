@@ -136,17 +136,25 @@ import cv2
 
 Hopefully, no errors should come up.
 
-# Step4: Installing Mediapipe:
+# Step 4: Installing Mediapipe:
 
-Let's now get mediapipe onto the environment.
+Let's now get mediapipe onto the environment. We will be using Version 0.8.4.0
 
 ```
-python3 -m pip install mediapipe-rpi4
+python3 -m pip install mediapipe-rpi4==0.8.4.0
 ```
 If you get an HTTP timeout error. Simply reboot your system through either the application menu or by entering:
 
 ```
 sudo reboot
 ```
+
+After the installation is successfully completed, open the Python interpreter and trying importing mediapipe by pasting:
+
+```
+import mediapipe
+```
+You will most likely get an error that reads as follows:
+>TypeError: Descriptors cannot be created directly
 
 
