@@ -2,13 +2,13 @@
   src="https://camo.githubusercontent.com/30cdd34ec996c7ef9ad50fa02379e02738d27979e5aa7839899fb9e03fe65a4d/68747470733a2f2f6d65646961706970652e6465762f696d616765732f6d65646961706970655f736d616c6c2e706e67"
   alt="Alt text"
   title="Optional title"
-  style="display: inline-block; margin: 0 auto; max-width: 300px">
+  style="display: inline-block; margin:50px auto; max-width: 300px"> 
 
 <img
   src= "https://www.raspberrypi.com/app/uploads/2017/06/Powered-by-Raspberry-Pi-Logo_Outline-Colour-Screen-500x153.png"
   alt="Alt text"
   title="Optional title"
-  style="auto; max-width: 150px">
+  style="verical-align:right">
 
 
 # Requirements
