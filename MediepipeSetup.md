@@ -1,15 +1,18 @@
-<p align:"center"; width:"100%">
+<p align ="center" width="100%">
 <img
-  src="https://camo.githubusercontent.com/30cdd34ec996c7ef9ad50fa02379e02738d27979e5aa7839899fb9e03fe65a4d/68747470733a2f2f6d65646961706970652e6465762f696d616765732f6d65646961706970655f736d616c6c2e706e67"
-  width ="33%"> 
+  src=https://d1tlzifd8jdoy4.cloudfront.net/wp-content/uploads/2020/05/795316b92fc766b0181f6fef074f03fa-1.png
+     width = 600
+     height= 300
+     style="align:center">
 </p>
 
+<p align ="center" width ="100%">
 <img
   src= "https://www.raspberrypi.com/app/uploads/2017/06/Powered-by-Raspberry-Pi-Logo_Outline-Colour-Screen-500x153.png"
   alt="Alt text"
   title="Optional title"
-  style="verical-align:right">
-
+  style="align:center">
+</p>
 
 # Requirements
   The first thing you will need to do is get the correct OS installed on your microSD card. Due to issues with the camera module software in the new 64-bit OS and OpenCV, we are forced to use the Legacy OS known as Buster. To install this operating system, go to https://www.raspberrypi.com/software/, and install the software for your operating system.
