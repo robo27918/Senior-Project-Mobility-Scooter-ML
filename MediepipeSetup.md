@@ -157,4 +157,10 @@ import mediapipe
 You will most likely get an error that reads as follows:
 >TypeError: Descriptors cannot be created directly
 
+To fix this we simply need to downgrade the verision protobuf package as follows:
 
+```
+python3 -m pip install protobuf==3.20.*
+```
+
+Now try importing mediapipe again. Hopefully, the import should be successful and no errors should come up!
