@@ -30,6 +30,7 @@ This command will enable the camera for 5 seconds, and thereafter send the image
 
 # Step 2 [optional]: Installing virtualenv 
 
+
 I think its good practice to use virtual environments. This can prevent a lot of headaches later on. But if you want to skip this step, then proceed to the next step, but you've warned.
 
 Ok good, you are wise to keep reading. So the first thing you need to do is run the following command in the terminal 
@@ -60,13 +61,40 @@ Thereafter, reload the file with the following command:
 ```
 source ~/.bashrc
 ```
-
-# Step 3: 
-
-# Basic commands
+Now that you have virtualenv installed, you want to make a virtual environment. To do so, enter the following command (Note: the name can be whaever you like, but I chose mediapipe-raspi)
 
 ```
-sudo raspi-config 
+mkvirtualenv media-rapsi
 ```
-# Section2
-# Section3
+
+To work inside this environment, enter the following:
+
+```
+workon media-raspi
+
+```
+To exit the environment enter:
+
+```
+deactivate
+```
+
+To list all the Python packages in the virtual environment enter:
+
+```
+pip freeze
+```
+# Step 3: Installing mediapipe:
+Let's now get mediapipe onto the environment. However, there are some few commands we need to run before we can actually install mediapipe itself
+
+First, lets make sure that our system is up-to-date so that we can avoid any issues. Thus, paste the following into your terminal:
+
+```
+sudo apt update
+```
+
+```
+sudo apt upgrade
+```
+
+
