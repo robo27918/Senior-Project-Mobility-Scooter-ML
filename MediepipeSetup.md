@@ -97,4 +97,17 @@ sudo apt update
 sudo apt upgrade
 ```
 
+Now lets install numpy. The version we want is one that is compatiable with Python 3.7, otherwise we might get some errors when trying to install OpenCV later on. Thus, run the following command:
+
+```
+python3 -m pip install numpy==1.16.2
+```
+
+Now we need to install OpenCV (version: 4.3.0.38) with the following command:
+
+```
+python3 -m pip install opencv-python==4.3.0.38
+```
+
+
 
