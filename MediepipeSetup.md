@@ -31,11 +31,15 @@ Go to https://www.raspberrypi.com/software/, and install the Raspberry Pi Imager
 # Step 1: Camera setup and Test
   Once you've installed the Buster operating system and hooked up your camera module, you want to enable the camera. To do this click on the applications menu at the top left corner, then click on Preferences, and then Raspberry Pi Configuration. The image below shows the tab you want to navigate to and how to enable the camera. After enabling, you will have to reboot your Raspberry Pi
  
- <img
-  src= "https://imageio.forbes.com/specials-images/imageserve/60499cd3edb82cbf47c586e3/This-sand-dune--known-as-Dingo-Gap--was-crossed-by-Mars-Curiosity-in-2014-/960x0.jpg?format=jpg&width=960"
+ <p align ="center" width ="50%">
+<img
+  src= "./Mediapipe_setup_pics/cam_setup.png"
   alt="Alt text"
   title="Optional title"
-  style="auto; max-width: 50px">
+  width=700
+  height=400
+  style="align:center">
+</p>
   
 Now is the time to test that the camera module works. To do this, enter the following command in the terminal
 
