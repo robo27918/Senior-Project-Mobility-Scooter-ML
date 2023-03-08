@@ -84,13 +84,13 @@ source ~/.bashrc
 Now that you have virtualenv installed, you want to make a virtual environment. To do so, enter the following command (Note: the name can be whaever you like, but I chose mediapipe-raspi)
 
 ```
-mkvirtualenv media-rapsi
+mkvirtualenv mediapipe-rapsi
 ```
 
 To work inside this environment, enter the following:
 
 ```
-workon media-raspi
+workon mediapipe-raspi
 
 ```
 To exit the environment enter:
@@ -173,7 +173,7 @@ import mediapipe
 You will most likely get an error that reads as follows:
 >TypeError: Descriptors cannot be created directly
 
-To fix this we simply need to downgrade the verision protobuf package as follows:
+To fix this we simply need to downgrade the verision of protobuf package as follows:
 
 ```
 python3 -m pip install protobuf==3.20.*
