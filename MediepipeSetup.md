@@ -53,7 +53,7 @@ This command will enable the camera for 5 seconds, and thereafter send the image
 
 I think its good practice to use virtual environments. This can prevent a lot of headaches later on. But if you want to skip this step, then proceed to the next step, but you've warned.
 
-Ok good, you are wise to keep reading. So the first thing you need to do is run the following command in the terminal 
+So if you kept reading, the first thing you need to do is run the following command in the terminal 
 
 ```
 pip3 install virtualenv virtualenvwrapper
