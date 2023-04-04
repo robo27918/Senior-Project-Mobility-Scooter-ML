@@ -7,15 +7,39 @@ We want to select a few of the limbs as options for buttons --> but eventually w
 """
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
+## --- the not so essential landmarks ---
 
+#face landmarks:
+nose_idx = mp_pose.PoseLandmark.NOSE.value
+
+l_eye_inner_idx = mp_pose.PoseLandmark.LEFT_EYE_INNER.value
+l_eye_idx = mp_pose.PoseLandmark.LEFT_EYE.value
+l_eye_outer_idx = mp_pose.PoseLandmark.LEFT_EYE_OUTER.value
+
+r_eye_inner_idx = mp_pose.PoseLandmark.RIGHT_EYE_INNER.value
+r_eye_idx = mp_pose.PoseLandmark.RIGHT_EYE.value
+r_eye_outer_idx = mp_pose.PoseLandmark.RIGHT_EYE_OUTER.value
+
+l_ear_idx = mp_pose.PoseLandmark.LEFT_EAR.value
+r_ear_idx = mp_pose.PoseLandmark.RIGHT_EAR.value
+
+l_mouth_idx = mp_pose.PoseLandmark.MOUTH_LEFT.value
+r_mouth_idx = mp_pose.PoseLandmark.MOUTH_RIGHT.value
+
+face_landmarks = [nose_idx,l_eye_inner_idx, l_eye_idx, l_eye_outer_idx, 
+                  r_eye_inner_idx, r_eye_idx, r_eye_outer_idx,
+                  l_ear_idx, r_ear_idx, l_mouth_idx, r_mouth_idx]
+
+l_pinky_idx = mp_pose.PoseLandmark.LEFT_PINKY.value
+r_pinky_idx = mp_pose.PoseLandmark.RIGHT_PINKY.value
+
+## ---- the essential landmarks -----
 l_shoulder_idx = mp_pose.PoseLandmark.LEFT_SHOULDER.value
 r_shoulder_idx = mp_pose.PoseLandmark.RIGHT_SHOULDER.value
 l_elbow_idx = mp_pose.PoseLandmark.LEFT_ELBOW.value
 r_elbow_idx = mp_pose.PoseLandmark.RIGHT_ELBOW.value
 l_wrist_idx = mp_pose.PoseLandmark.LEFT_WRIST.value
 r_wrist_idx = mp_pose.PoseLandmark.RIGHT_WRIST.value
-l_pinky_idx = mp_pose.PoseLandmark.LEFT_PINKY.value
-r_pinky_idx = mp_pose.PoseLandmark.RIGHT_PINKY.value
 
 #list to append user gui choices and send over to Engine
 
@@ -24,12 +48,15 @@ pygame.init()
     Basic function to encapsulate the drawing routine
 '''
 def draw_button(screen,color,clicked_color,x,y,width,height,text,clicked):
+    font=pygame.font.Font(None,30)
     if clicked:
         pygame.draw.rect(screen,clicked_color,(x,y,width,height))
+        text_surface= font.render(text,True,BLACK)
     else:
         pygame.draw.rect(screen,color,(x,y,width,height))
-    font=pygame.font.Font(None,30)
-    text_surface= font.render(text,True,BLACK)
+        text_surface= font.render(text,True,WHITE)
+ 
+   
     text_rect=text_surface.get_rect(center=(x+width/2, y + height/2))
     screen.blit(text_surface,text_rect)
 
@@ -61,6 +88,12 @@ button_width = 150
 button_height = 50
 button_color = GREY
 button_clicked_color=GREEN
+
+button0_x = 300
+button0_y = 100
+button0_text = "face"
+button0_on = False
+
 
 button1_x = 200
 button1_y =200
@@ -116,6 +149,17 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
+
+            if is_button_clicked(button0_x,button0_y,button_width,button_height):
+                if button0_on: #then turn off (ie remove the limb)
+                    for landmark in face_landmarks:
+                        user_landmark_choices.remove(landmark)
+                    button0_on = not button0_on
+                else:
+                    button0_on = not button0_on
+                    for landmark in face_landmarks:
+                        user_landmark_choices.append(landmark);
+    
             if is_button_clicked(button1_x,button1_y,button_width,button_height):
                 if button1_on: #then turn off (ie remove the limb)
                     user_landmark_choices.remove(l_shoulder_idx)
@@ -179,7 +223,8 @@ while True:
                 engine_button_on = not engine_button_on
                 myEngine = MediaPipeEngine(webcam_id = 0, show=True, custom_objects=None, user_landmark_list=user_landmark_choices);
                 myEngine.run()
-            
+                
+                button0_on = reset_button(button0_on)
                 button1_on = reset_button(button1_on)
                 button2_on = reset_button(button2_on)
                 button3_on = reset_button(button3_on)
@@ -197,6 +242,7 @@ while True:
             pygame.quit()
             sys.exit()
     screen.fill(CYAN)
+    draw_button(screen,button_color,button_clicked_color,button0_x,button0_y, button_width, button_height, button0_text, button0_on)
     draw_button(screen,button_color,button_clicked_color,button1_x,button1_y, button_width, button_height, button1_text, button1_on)
     draw_button(screen,button_color,button_clicked_color,button2_x,button2_y, button_width, button_height, button2_text, button2_on)
     draw_button(screen,button_color,button_clicked_color,button3_x,button3_y, button_width, button_height, button3_text, button3_on)
