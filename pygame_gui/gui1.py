@@ -2,9 +2,16 @@ import pygame
 import sys
 import mediapipe as mp
 from Engine import MediaPipeEngine
+
+import tkinter as tk
+from tkinter import filedialog
 """
 We want to select a few of the limbs as options for buttons --> but eventually we may want to incorporate all 33 limbs
 """
+#inits for dialog to get file dialog box
+root = tk.Tk()
+root.withdraw()
+
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 ## --- the not so essential landmarks ---
@@ -30,8 +37,13 @@ face_landmarks = [nose_idx,l_eye_inner_idx, l_eye_idx, l_eye_outer_idx,
                   r_eye_inner_idx, r_eye_idx, r_eye_outer_idx,
                   l_ear_idx, r_ear_idx, l_mouth_idx, r_mouth_idx]
 
+#---- hand landmarks
 l_pinky_idx = mp_pose.PoseLandmark.LEFT_PINKY.value
 r_pinky_idx = mp_pose.PoseLandmark.RIGHT_PINKY.value
+l_thumb_idx = mp_pose.PoseLandmark.LEFT_THUMB.value
+r_thumb_idx = mp_pose.PoseLandmark.RIGHT_THUMB.value
+l_index_idx = mp_pose.PoseLandmark.RIGHT_INDEX.value
+r_index_idx = mp_pose.PoseLandmark.LEFT_INDEX.value
 
 ## ---- the essential landmarks -----
 l_shoulder_idx = mp_pose.PoseLandmark.LEFT_SHOULDER.value
@@ -41,7 +53,7 @@ r_elbow_idx = mp_pose.PoseLandmark.RIGHT_ELBOW.value
 l_wrist_idx = mp_pose.PoseLandmark.LEFT_WRIST.value
 r_wrist_idx = mp_pose.PoseLandmark.RIGHT_WRIST.value
 
-#list to append user gui choices and send over to Engine
+
 
 pygame.init()
 '''
@@ -67,7 +79,10 @@ def reset_button(button):
     if button:
         return not button
        
-        
+def open_file_browser():
+    # Use the filedialog module to open the window and get the selected file
+    return filedialog.askopenfilename()
+   
 
 #colors to be used for buttons
 WHITE = (255, 255, 255)
@@ -125,17 +140,17 @@ button6_y = 400
 button6_text = "right wrist"
 button6_on = False
 
+
+#---code for the hand buttons---
 button7_x = 200
 button7_y = 500
-button7_text = "left pinky"
+button7_text = "left hand"
 button7_on = False
 
 button8_x = 400
 button8_y = 500
-button8_text = "right pinky"
+button8_text = "right hand"
 button8_on = False
-
-
 
 on_engine_button_x  = 600
 on_engine_button_y = 200
@@ -143,6 +158,28 @@ on_engine_button_text = "Start webcam"
 engine_button_on = False
 on_button_clicked_color = RED;
 
+on_engine_button_x  = 600
+on_engine_button_y = 300
+on_engine_button_text = "Start webcam"
+engine_button_on = False
+on_button_clicked_color = RED;
+
+#making lable to indicate browsing option
+myfont = pygame.font.SysFont("monospace",15)
+label = myfont.render("Choose a file:",1,BLACK)
+
+#making button to open file select window:
+browse_button_x = 600
+browse_button_y = 420
+browse_button_text = "Browse"
+
+#make a play selected video play button 
+play_vid_button_x = 600
+play_vid_button_y = 500
+play_vid_button_text = "play video"
+play_vid_button_on = False
+
+#list to append user gui choices and send over to Engine
 user_landmark_choices = []
 while True:
    
@@ -207,16 +244,24 @@ while True:
                 if button7_on:
                     button7_on = not button7_on
                     user_landmark_choices.remove(l_pinky_idx)
+                    user_landmark_choices.remove(l_thumb_idx)
+                    user_landmark_choices.remove(l_index_idx)
                 else:
                     button7_on = not button7_on
                     user_landmark_choices.append(l_pinky_idx)
+                    user_landmark_choices.append(l_thumb_idx)
+                    user_landmark_choices.append(l_index_idx)
             if is_button_clicked(button8_x,button8_y,button_width,button_height):
                 if button8_on:
                     button8_on = not button8_on
                     user_landmark_choices.remove(r_pinky_idx)
+                    user_landmark_choices.remove(r_thumb_idx)
+                    user_landmark_choices.remove(r_index_idx)
                 else:
                     button8_on = not button8_on
                     user_landmark_choices.append(r_pinky_idx)
+                    user_landmark_choices.append(r_thumb_idx)
+                    user_landmark_choices.append(r_index_idx)
            
             #the last check is to see if we can create the new screen for the webcam stuff
             if is_button_clicked(on_engine_button_x, on_engine_button_y,button_width,button_height):
@@ -236,8 +281,11 @@ while True:
                 engine_button_on = reset_button (engine_button_on)
                 user_landmark_choices = []
                 print("ok the webcam is off now ")
+            #handle the browse button selection 
+            if is_button_clicked(browse_button_x,browse_button_y,button_width,button_height):
+                file = open_file_browser()
+            #handle the play vid button assuming it passes the filetype check 
 
-        
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
@@ -252,4 +300,8 @@ while True:
     draw_button(screen,button_color,button_clicked_color,button7_x,button7_y, button_width, button_height, button7_text, button7_on)
     draw_button(screen,button_color,button_clicked_color,button8_x,button8_y, button_width, button_height, button8_text, button8_on)
     draw_button(screen, button_color, button_clicked_color, on_engine_button_x, on_engine_button_y, button_width,button_height, on_engine_button_text, engine_button_on)
+    screen.blit(label,(600,400))
+    draw_button(screen,button_color, button_clicked_color,browse_button_x,browse_button_y,button_width,button_height,browse_button_text,False)
+    draw_button(screen, button_color, button_clicked_color, play_vid_button_x, play_vid_button_y, button_width,button_height, play_vid_button_text,play_vid_button_on)
+
     pygame.display.update()
