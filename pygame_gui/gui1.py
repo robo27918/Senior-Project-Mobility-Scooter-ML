@@ -2,9 +2,10 @@ import pygame
 import sys
 import mediapipe as mp
 from Engine import MediaPipeEngine
-
+import utils
 import tkinter as tk
 from tkinter import filedialog
+import os
 """
 We want to select a few of the limbs as options for buttons --> but eventually we may want to incorporate all 33 limbs
 """
@@ -79,10 +80,17 @@ def reset_button(button):
     if button:
         return not button
        
-def open_file_browser():
+def get_video_from_filedir():
     # Use the filedialog module to open the window and get the selected file
+    
     return filedialog.askopenfilename()
    
+def is_video_file(filepath):
+    video_extensions = ['.mp4', '.mov', '.avi', '.wmv', '.mkv']
+    file_extension = os.path.splitext(filepath)[1]
+    if file_extension in video_extensions:
+        return True
+    return False
 
 #colors to be used for buttons
 WHITE = (255, 255, 255)
@@ -139,7 +147,7 @@ button6_x = 400
 button6_y = 400
 button6_text = "right wrist"
 button6_on = False
-
+runme = None
 
 #---code for the hand buttons---
 button7_x = 200
@@ -177,7 +185,7 @@ browse_button_text = "Browse"
 play_vid_button_x = 600
 play_vid_button_y = 500
 play_vid_button_text = "play video"
-play_vid_button_on = False
+valid_file = False
 
 #list to append user gui choices and send over to Engine
 user_landmark_choices = []
@@ -283,7 +291,12 @@ while True:
                 print("ok the webcam is off now ")
             #handle the browse button selection 
             if is_button_clicked(browse_button_x,browse_button_y,button_width,button_height):
-                file = open_file_browser()
+                vid_file = get_video_from_filedir()
+                print(vid_file)
+                print (is_video_file(vid_file))
+                if is_video_file(vid_file):
+                    valid_file = not valid_file
+
             #handle the play vid button assuming it passes the filetype check 
 
         if event.type == pygame.QUIT:
@@ -302,6 +315,6 @@ while True:
     draw_button(screen, button_color, button_clicked_color, on_engine_button_x, on_engine_button_y, button_width,button_height, on_engine_button_text, engine_button_on)
     screen.blit(label,(600,400))
     draw_button(screen,button_color, button_clicked_color,browse_button_x,browse_button_y,button_width,button_height,browse_button_text,False)
-    draw_button(screen, button_color, button_clicked_color, play_vid_button_x, play_vid_button_y, button_width,button_height, play_vid_button_text,play_vid_button_on)
+    draw_button(screen, button_color, button_clicked_color, play_vid_button_x, play_vid_button_y, button_width,button_height, play_vid_button_text,valid_file)
 
     pygame.display.update()
