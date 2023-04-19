@@ -189,6 +189,8 @@ valid_file = False
 
 #list to append user gui choices and send over to Engine
 user_landmark_choices = []
+# list to hold video file to be sent into engine if that is the users choice
+video_choice = [] 
 while True:
    
     for event in pygame.event.get():
@@ -296,8 +298,12 @@ while True:
                 print (is_video_file(vid_file))
                 if is_video_file(vid_file):
                     valid_file = not valid_file
+                    video_choice.append(vid_file)
 
             #handle the play vid button assuming it passes the filetype check 
+            if is_button_clicked(play_vid_button_x, play_vid_button_y, button_width, button_height) and valid_file:
+                myEngine = MediaPipeEngine(video_path= video_choice.pop(),show=True, custom_objects=None, user_landmark_list=user_landmark_choices);
+                myEngine.run()
 
         if event.type == pygame.QUIT:
             pygame.quit()

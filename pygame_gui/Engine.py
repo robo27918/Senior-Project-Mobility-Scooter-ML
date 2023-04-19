@@ -1,6 +1,7 @@
 import cv2
 import typing
 import numpy as np
+import stow 
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 mp_pose = mp.solutions.pose
@@ -170,10 +171,101 @@ class MediaPipeEngine :
         cap.release()
         cv2.destroyAllWindows()
         print("goodbye!")
+    def check_video_frames_range(self, fnum):
+        """Not to waste resources this function processes only specified range of video frames
+        Args:
+            fnum: (int) - current video frame number
+        Returns:
+            status: (bool) - Return True if skip processing otherwise False
+        """
+        if self.start_video_frame and fnum < self.start_video_frame:
+            return True
+
+        if self.end_video_frame and fnum > self.end_video_frame:
+            return True
+        
+        return False
+    def process_video(self) -> None:
+        """Process video for given video_path and creates processed video in same path
+        """
+        mp_pose = mp.solutions.pose
+        mp_drawing = mp.solutions.drawing_utils
+    
+
+     
+        if not stow.exists(self.video_path):
+           raise Exception(f"Given video path doesn't exists {self.video_path}")
+
+        # Create a VideoCapture object and read from input file
+        cap = cv2.VideoCapture(self.video_path)
+
+        # Check if camera opened successfully
+        if not cap.isOpened():
+            raise Exception(f"Error opening video stream or file {self.video_path}")
+
+        # Capture video details
+        width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        # Create video writer in the same location as original video
+        output_path = self.video_path.replace(f".{stow.extension(self.video_path)}", f"_{self.output_extension}.mp4")
+        out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'MP4V'), fps, (width, height))
+        rgb_frame = None
+        # Read all frames from video
+        for fnum in range(frames):
+            # Capture frame-by-frame
+            with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+                success, frame = cap.read()
+                if not success:
+                    break
+                
+                if self.check_video_frames_range(fnum):
+                    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    # Process image with MediaPipe Pose model
+                    results = pose.process(rgb_frame)
+
+                    # Extract pose landmarks
+                    pose_landmarks = results.pose_landmarks
+
+                    if pose_landmarks is not None:
+                        landmark_subset = landmark_pb2.NormalizedLandmarkList (
+                        landmark = [results.pose_landmarks.landmark[landmark_pt] for landmark_pt in self.user_landmark_list]
+                    )
+                    
+                        
+                        mp_drawing.draw_landmarks(
+                            image=frame,
+                            landmark_list=landmark_subset,
+                            connections=None, #custom_connections.CUSTOM_CONNECTIONS
+                            landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
+                            )
+            cv2.imshow('MediaPipe Pose', frame)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
+                   # out.write(rgb_frame)
+            if self.break_on_end and fnum >= self.end_video_frame:
+                break
+            continue
+
+                #frame = self.custom_processing(self.flip(frame))
+
+                #out.write(frame)
+
+                #if not self.display(frame):
+                    #break
+
+        cap.release()
+        out.release()
+   
     def run(self):
         '''
             Main function to start processing image input
         '''
-        self.process_webcam_new()
+        if self.video_path:
+            self.process_video()
+        else:    
+            self.process_webcam_new()
 
 
