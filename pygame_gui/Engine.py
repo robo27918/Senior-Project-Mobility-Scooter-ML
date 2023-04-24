@@ -4,6 +4,7 @@ import numpy as np
 import stow 
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
+import threading
 mp_pose = mp.solutions.pose
 ##fix this later by moving to another file or etc..
 '''
@@ -259,13 +260,140 @@ class MediaPipeEngine :
         cap.release()
         out.release()
    
+       
+    
     def run(self):
         '''
             Main function to start processing image input
         '''
         if self.video_path:
-            self.process_video()
+           self.process_video_with_mediapipe()
         else:    
             self.process_webcam_new()
 
 
+
+
+    def process_video_with_mediapipe(self):
+        # Initialize the Mediapipe pose detection module
+        mp_pose = mp.solutions.pose
+        mp_drawing = mp.solutions.drawing_utils
+    
+        # Loop through the frames of the video
+        if not stow.exists(self.video_path):
+           raise Exception(f"Given video path doesn't exists {self.video_path}")
+        cap = cv2.VideoCapture(self.video_path)
+       
+          
+        while True:
+            # Read a frame from the video file
+            ret, frame = cap.read()
+
+            # Check if the frame was successfully read
+            if not ret:
+                break
+
+            # Convert the frame to RGB format (required by Mediapipe)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            # Detect the landmarks on the person in the frame
+            with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+                results = pose.process(frame_rgb)
+                landmarks = results.pose_landmarks
+
+            # Draw the landmarks on the frame
+            if landmarks is not None:
+                # Loop through all the landmarks
+                if landmarks is not None:
+                        landmark_subset = landmark_pb2.NormalizedLandmarkList (
+                        landmark = [results.pose_landmarks.landmark[landmark_pt] for landmark_pt in self.user_landmark_list]
+                    )
+                    
+                        
+                        mp_drawing.draw_landmarks(
+                            image=frame,
+                            landmark_list=landmark_subset,
+                            connections=None, #custom_connections.CUSTOM_CONNECTIONS
+                            landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
+                            )
+            # Display the processed frame
+            cv2.imshow('Processed Video', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        # Release the video file and close all windows
+        cap.release()
+        cv2.destroyAllWindows()
+
+
+    def process_frame(self,frame):
+        # Initialize the Mediapipe pose detection module
+        mp_pose = mp.solutions.pose
+
+        # Convert the frame to RGB format (required by Mediapipe)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        # Detect the landmarks on the person in the frame
+        with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+            results = pose.process(frame_rgb)
+            landmarks = results.pose_landmarks
+
+        # Draw the landmarks on the frame
+        if landmarks is not None:
+            # Loop through all the landmarks
+            for landmark in landmarks.landmark:
+                # Draw a small circle at each landmark point
+                x, y = int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])
+                cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+
+        # Return the processed frame
+        return frame
+
+    def process_video_with_mediapipe_multithread(self):
+        # Open the video file for processing
+        cap = cv2.VideoCapture(self.video_path)
+
+        # Get the frame rate of the video
+        fps = cap.get(cv2.CAP_PROP_FPS)
+
+        # Create a VideoWriter object to write the processed video to disk
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter('output.mp4', fourcc, fps, (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+
+        # Define a list to store the threads
+        threads = []
+
+        # Loop through the frames of the video
+        while True:
+            # Read a frame from the video file
+            ret, frame = cap.read()
+
+            # Check if the frame was successfully read
+            if not ret:
+                break
+
+            # Create a separate thread for processing the frame
+            t = threading.Thread(target=lambda frame: threads.append(self.process_frame(frame)), args=(frame,))
+            t.start()
+
+            # Wait for all threads to complete before displaying the frame
+            for thread in threads:
+                thread.join()
+
+            # Display the processed frame
+            cv2.imshow('Video', threads[-1])
+
+            # Write the processed frame to disk
+            #out.write(threads[-1])
+
+            # Clear the list of threads
+            threads.clear()
+
+            # Wait for a key press to exit
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        # Release the video file and the VideoWriter object, and close all windows
+        cap.release()
+        out.release()
+        cv2.destroyAllWindows()
