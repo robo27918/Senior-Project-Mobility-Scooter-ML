@@ -68,7 +68,18 @@ class Engine :
             raise Exception(f"Webcam with ID ({self.webcam_id}) cannot be opened")
         
         cap.release()
-
+    def make_csv(self.):
+          with open('myFile.txt','a') as f:
+            for idx,landmark_name in landmark_subset_dict.items():
+               
+                   
+                    x = pose_landmarks.landmark[idx].x
+                    y = pose_landmarks.landmark[idx].y
+                    z = pose_landmarks.landmark[idx].z
+                    
+                    str_to_file = f"time stamp: {time.time()- start_time} sec,landmark-name:{landmark_name}, x: {x}, y: {y}, z: {z}"
+                    f.write(str_to_file + "\n")
+                    print(f"")
     def run(self):
         '''
             Main function to start processing image input
