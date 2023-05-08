@@ -5,6 +5,7 @@ import stow
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
 import threading
+import queue
 mp_pose = mp.solutions.pose
 ##fix this later by moving to another file or etc..
 '''
@@ -40,6 +41,7 @@ class MediaPipeEngine :
             end_video_frame: int = 0,
             break_on_end: bool = False,
             user_landmark_list: list = []
+           
     ) -> None:
         self.video_path = video_path
         self.webcam_id = webcam_id
@@ -51,7 +53,7 @@ class MediaPipeEngine :
         self.end_video_frame = end_video_frame
         self.break_on_end = break_on_end
         self.user_landmark_list = user_landmark_list
-
+        self.queue = queue.Queue()
         ##mediapipe initialization
        
     
@@ -275,6 +277,7 @@ class MediaPipeEngine :
 
 
     def process_video_with_mediapipe(self):
+        # 
         # Initialize the Mediapipe pose detection module
         mp_pose = mp.solutions.pose
         mp_drawing = mp.solutions.drawing_utils
@@ -283,49 +286,49 @@ class MediaPipeEngine :
         if not stow.exists(self.video_path):
            raise Exception(f"Given video path doesn't exists {self.video_path}")
         cap = cv2.VideoCapture(self.video_path)
-       
-          
-        while True:
-            # Read a frame from the video file
-            ret, frame = cap.read()
+        with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+            
+            while True:
+                # Read a frame from the video file
+                ret, frame = cap.read()
 
-            # Check if the frame was successfully read
-            if not ret:
-                break
+                # Check if the frame was successfully read
+                if not ret:
+                    break
 
-            # Convert the frame to RGB format (required by Mediapipe)
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                # Convert the frame to RGB format (required by Mediapipe)
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # Detect the landmarks on the person in the frame
-            with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+                # Detect the landmarks on the person in the frame
+            
                 results = pose.process(frame_rgb)
                 landmarks = results.pose_landmarks
 
-            # Draw the landmarks on the frame
-            if landmarks is not None:
-                # Loop through all the landmarks
+                # Draw the landmarks on the frame
                 if landmarks is not None:
-                        landmark_subset = landmark_pb2.NormalizedLandmarkList (
-                        landmark = [results.pose_landmarks.landmark[landmark_pt] for landmark_pt in self.user_landmark_list]
-                    )
-                    
+                    # Loop through all the landmarks
+                    if landmarks is not None:
+                            landmark_subset = landmark_pb2.NormalizedLandmarkList (
+                            landmark = [results.pose_landmarks.landmark[landmark_pt] for landmark_pt in self.user_landmark_list]
+                        )
                         
-                        mp_drawing.draw_landmarks(
-                            image=frame,
-                            landmark_list=landmark_subset,
-                            connections=None, #custom_connections.CUSTOM_CONNECTIONS
-                            landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
-                            )
-            # Display the processed frame
-            cv2.imshow('Processed Video', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                            
+                            mp_drawing.draw_landmarks(
+                                image=frame,
+                                landmark_list=landmark_subset,
+                                connections=None, #custom_connections.CUSTOM_CONNECTIONS
+                                landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
+                                )
+                # Display the processed frame
+                cv2.imshow('Processed Video', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
-        # Release the video file and close all windows
-        cap.release()
-        cv2.destroyAllWindows()
+            # Release the video file and close all windows
+            cap.release()
+            cv2.destroyAllWindows()
 
-
+    '''
     def process_frame(self,frame):
         # Initialize the Mediapipe pose detection module
         mp_pose = mp.solutions.pose
@@ -396,4 +399,106 @@ class MediaPipeEngine :
         # Release the video file and the VideoWriter object, and close all windows
         cap.release()
         out.release()
-        cv2.destroyAllWindows()
+        cv2.destroyAllWindows()'''
+   
+    def process_video_with_mediapipe_multithread(self):
+        # Open the video file
+        NUM_THREADS=4
+        MAX_THREADS=4
+        cap = cv2.VideoCapture(self.video_path)
+
+        # Create a list to store the processed frames
+        threads = []
+
+        # Create a queue to hold the frames to be processed
+        queue= self.queue
+
+        # Create a lock to synchronize access to the threads list
+        lock = threading.Lock()
+
+        # Start the worker threads
+        for i in range(NUM_THREADS):
+            thread = threading.Thread(target=self.process_frames, args=(queue, lock, threads))
+            thread.start()
+
+        # Read the first frame from the video
+        ret, frame = cap.read()
+
+        # Loop through all the frames in the video
+        while ret:
+            # Add the frame to the queue
+            queue.put(frame)
+
+            # Read the next frame from the video
+            ret, frame = cap.read()
+
+            # Display the last processed frame
+            if threads and len(threads) > 0:
+                cv2.imshow('Video', threads[-1])
+                #cv2.waitKey(1)
+
+        # Release the video capture object
+        cap.release()
+
+        # Stop the worker threads
+        for i in range(NUM_THREADS):
+            queue.put(None)
+        for thread in threading.enumerate():
+            if thread != threading.current_thread():
+                thread.join()
+    def process_frames(self,queue, lock, threads):
+            NUM_THREADS=4
+            MAX_THREADS=20
+            # Initialize the mediapipe pose detection model
+            mp_pose = mp.solutions.pose
+            mp_drawing = mp.solutions.drawing_utils
+            # Loop until the main thread signals to stop
+            while True:
+                # Wait for a frame to be added to the queue
+                frame = queue.get()
+
+                # Check if this is the sentinel value indicating the end of the video
+                if frame is None:
+                    # Signal to stop processing
+                    break
+
+                # Convert the frame to RGB format
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+                # Process the frame with mediapipe
+                with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+                    results = pose.process(frame_rgb)
+                    landmarks = results.pose_landmarks
+
+                # Draw the landmarks on the frame
+                    if landmarks is not None:
+                        # Loop through all the landmarks
+                        if landmarks is not None:
+                                landmark_subset = landmark_pb2.NormalizedLandmarkList (
+                                landmark = [results.pose_landmarks.landmark[landmark_pt] for landmark_pt in self.user_landmark_list]
+                            )
+                            
+                                
+                                mp_drawing.draw_landmarks(
+                                    image=frame,
+                                    landmark_list=landmark_subset,
+                                    connections=None, #custom_connections.CUSTOM_CONNECTIONS
+                                    landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
+                                    )
+
+               
+
+                # Acquire the lock to modify the threads list
+                with lock:
+                    # Add the processed frame to the threads list
+                    threads.append(frame)
+
+                    # Remove the oldest frames from the threads list to limit its size
+                    if len(threads) > MAX_THREADS:
+                        threads.pop(0)
+
+                # Release the lock
+                lock.release()
+
+                # Signal to the queue that the frame has been processed
+                queue.task_done()      
