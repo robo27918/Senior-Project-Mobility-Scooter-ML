@@ -1,6 +1,3 @@
-## Pose Estimation model: https://google.github.io/mediapipe/solutions/pose.html
-
-# Usage
 
 <p align ="center" width="100%">
 <img
@@ -9,6 +6,43 @@
      height= 300
      style="align:center">
 </p>
+
+## Pose Estimation model: https://google.github.io/mediapipe/solutions/pose.html
+
+# Usage
+
+<p align ="center" width ="50%">
+<img
+  src= "./gui&etc_pics/gui_screenshot.png"
+  alt="Alt text"
+  title="Optional title"
+  width=700
+  height=500
+  style="align:center">
+</p>
+
+<p align ="center" width ="30%">
+<img
+  src= "./gui&etc_pics/original_and_out_example.png"
+  alt="Alt text"
+  title="Optional title"
+  width=700
+  height=500
+  style="align:center">
+</p>
+
+<p align ="center" width ="30%">
+<img
+  src= "./gui&etc_pics/sample_output.png"
+  alt="Alt text"
+  title="Optional title"
+  width=700
+  height=500
+  style="align:center">
+</p>
+
+
+
 
 # Setup
 - MacOS (intel chip)
