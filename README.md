@@ -20,8 +20,9 @@
   height=500
   style="align:center">
 </p>
-## Landmark and video selection menu screen
-# This screen allows the user to select the landmarks they are interested in tracking and this is indicated by the button turning green. The browse button lets the user chose a video from their file system. If the video is the correct format, then the "play video" button turns green as well.
+
+# Landmark and video selection menu screen
+This screen allows the user to select the landmarks they are interested in tracking and this is indicated by the button turning green. The browse button lets the user chose a video from their file system. If the video is the correct format, then the "play video" button turns green as well.
 
 <p align ="center" width ="30%">
 <img
