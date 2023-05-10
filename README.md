@@ -33,7 +33,7 @@
 
 <p align ="center" width ="30%">
 <img
-  src= "./gui&etc_pics/sample_output.png"
+  src= "./gui&etc_pics/out_ex.png"
   alt="Alt text"
   title="Optional title"
   width=700
