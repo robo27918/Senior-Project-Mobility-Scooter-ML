@@ -4,25 +4,10 @@ import numpy as np
 import stow 
 import mediapipe as mp
 from mediapipe.framework.formats import landmark_pb2
-import threading
-import queue
+import mp_landmark
+import time
 mp_pose = mp.solutions.pose
-##fix this later by moving to another file or etc..
-'''
-l_shoulder_idx = mp_pose.PoseLandmark.LEFT_SHOULDER.value
-r_shoulder_idx = mp_pose.PoseLandmark.RIGHT_SHOULDER.value
-l_elbow_idx = mp_pose.PoseLandmark.LEFT_ELBOW.value
-r_elbow_idx = mp_pose.PoseLandmark.RIGHT_ELBOW.value
-l_wrist_idx = mp_pose.PoseLandmark.LEFT_WRIST.value
-r_wrist_idx = mp_pose.PoseLandmark.RIGHT_WRIST.value
-'''
 
-#dictionary to make writing to file much easier 
-'''
-landmark_subset_dict = {l_shoulder_idx:"left-shoulder", r_shoulder_idx: "right-shoulder",
-                       l_elbow_idx: "left-elbow", r_elbow_idx:"right-elbow", 
-                       l_wrist_idx: "left-wrist", r_wrist_idx: "right-wrist"}
-'''
 class MediaPipeEngine :
     """
     Object to process webcam stream or video source
@@ -53,7 +38,7 @@ class MediaPipeEngine :
         self.end_video_frame = end_video_frame
         self.break_on_end = break_on_end
         self.user_landmark_list = user_landmark_list
-        self.queue = queue.Queue()
+        #self.queue = queue.Queue()
         ##mediapipe initialization
        
     
@@ -173,7 +158,7 @@ class MediaPipeEngine :
         self.user_landmark_list = []
         cap.release()
         cv2.destroyAllWindows()
-        print("goodbye!")
+        #print("goodbye!")
     def check_video_frames_range(self, fnum):
         """Not to waste resources this function processes only specified range of video frames
         Args:
@@ -202,14 +187,29 @@ class MediaPipeEngine :
             self.process_webcam_new()
 
 
-
+    #TODO: implement me please!
+    def make_csv (self,landmarks, start_time):
+        output_csv_path = self.video_path.replace(f".{stow.extension(self.video_path)}", f"_{self.output_extension}.csv")
+        mp
+        with open(output_csv_path,'a') as f:
+            for idx in self.user_landmark_list:
+                
+                    
+                        x = landmarks.landmark[idx].x
+                        y = landmarks.landmark[idx].y
+                        z = landmarks.landmark[idx].z
+                        
+                        str_to_file = f"time stamp: {time.time()- start_time} sec,landmark-name:{mp_landmark.landmark_dict[idx]}, x: {x}, y: {y}, z: {z}"
+                        f.write(str_to_file + "\n")
+                       
+                
 
     def process_video_with_mediapipe(self) -> None:
         # 
         # Initialize the Mediapipe pose detection module
         mp_pose = mp.solutions.pose
         mp_drawing = mp.solutions.drawing_utils
-    
+        start_time = time.time()
         # Loop through the frames of the video
         if not stow.exists(self.video_path):
            raise Exception(f"Given video path doesn't exists {self.video_path}")
@@ -257,7 +257,7 @@ class MediaPipeEngine :
                             landmark_drawing_spec = mp_drawing.DrawingSpec(color=(0,0,255), thickness=3, circle_radius=4)
                             )
                 # Display the processed frame
-                
+                self.make_csv(landmarks,start_time)
                 cv2.imshow('Processed Video', frame)
                 out.write(frame)
                 if cv2.waitKey(5) & 0xFF == 27:
@@ -266,6 +266,7 @@ class MediaPipeEngine :
             # Release the video file and close all windows
             cap.release()
             out.release
+            print("Printing from process_video_with_mediapipe: ", self.user_landmark_list)
             self.user_landmark_list = []
             cv2.destroyAllWindows()
 
