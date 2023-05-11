@@ -22,7 +22,7 @@
 </p>
 
 # Landmark and video selection menu screen
-This screen allows the user to select the landmarks they are interested in tracking and this is indicated by the button turning green. The browse button lets the user chose a video from their file system. If the video is the correct format, then the "play video" button turns green as well.
+This screen allows the user to select the landmarks they are interested in tracking and this is indicated by the button turning green. The browse button lets the user chose a video from their file system. If the video is the correct format, then the "play video" button turns green as well. Clicking play shows the video with the selected landmarks and then outputs a csv file and a video copy with the selected landmarks
 
 <p align ="center" width ="30%">
 <img
