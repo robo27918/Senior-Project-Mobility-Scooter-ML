@@ -25,7 +25,7 @@
 This screen allows the user to select the landmarks they are interested in tracking and this is indicated by the button turning green. The browse button lets the user chose a video from their file system. If the video is the correct format, then the "play video" button turns green as well. Clicking play shows the video with the selected landmarks and then outputs a csv file and a video copy with the selected landmarks.
 
 If the user chooses to import a video, the "annotated" video and csv file will be created in the same directory housing the video.
-
+The image below highlights this.
 
 <p align ="center" width ="30%">
 <img
@@ -37,7 +37,13 @@ If the user chooses to import a video, the "annotated" video and csv file will b
   style="align:center">
 </p>
 
-
+The program is only able to be executed from the command-line. After downloading the program and installing the required libraries, one can  should enter the following commands into the command line:
+```
+cd Senior-Project-Mobility-Scooter-ML
+cd pygame_gui
+python gui1.py
+```
+This should get the menu screen up and running!
 
 
 # Setup
