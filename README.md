@@ -26,23 +26,14 @@ This screen allows the user to select the landmarks they are interested in track
 
 If the user chooses to import a video, the "annotated" video and csv file will be created in the same directory housing the video.
 
-<p align ="center" width ="30%">
-<img
-  src= "./gui&etc_pics/original_and_out_example.png"
-  alt="Alt text"
-  title="Optional title"
-  width=700
-  height=500
-  style="align:center">
-</p>
 
 <p align ="center" width ="30%">
 <img
   src= "./gui&etc_pics/out_ex.png"
   alt="Alt text"
   title="Optional title"
-  width=700
-  height=500
+  width=400
+  height=300
   style="align:center">
 </p>
 
