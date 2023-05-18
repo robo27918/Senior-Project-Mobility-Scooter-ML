@@ -3,7 +3,7 @@
 <img
   src=https://d1tlzifd8jdoy4.cloudfront.net/wp-content/uploads/2020/05/795316b92fc766b0181f6fef074f03fa-1.png
      width = 400
-     height= 400
+     height= 200
      style="align:center">
 </p>
 
