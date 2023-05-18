@@ -2,8 +2,8 @@
 <p align ="center" width="100%">
 <img
   src=https://d1tlzifd8jdoy4.cloudfront.net/wp-content/uploads/2020/05/795316b92fc766b0181f6fef074f03fa-1.png
-     width = 600
-     height= 300
+     width = 400
+     height= 400
      style="align:center">
 </p>
 
@@ -16,8 +16,8 @@
   src= "./gui&etc_pics/gui_screenshot.png"
   alt="Alt text"
   title="Optional title"
-  width=700
-  height=500
+  width=400
+  height=400
   style="align:center">
 </p>
 
@@ -37,7 +37,7 @@ The image below highlights this.
   style="align:center">
 </p>
 
-The program is only able to be executed from the command-line. After downloading the program and installing the required libraries, one can  should enter the following commands into the command line:
+The program is only able to be executed from the command-line. After downloading the program and installing the required libraries, one should enter the following commands into the command line:
 ```
 cd Senior-Project-Mobility-Scooter-ML
 cd pygame_gui
